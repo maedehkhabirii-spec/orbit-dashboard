@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Orbit 🪐 | داشبورد شخصی هوشمند</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- =================================== -->
+  <!-- Loading Screen -->
+  <!-- =================================== -->
+  <div class="loading-screen" id="loading-screen">
+    <div class="loading-content">
+      <div class="loading-logo">🪐</div>
+      <div class="loading-title">Orbit</div>
+      <div class="loading-spinner"></div>
+      <div class="loading-text">در حال آماده‌سازی داشبورد شما...</div>
+    </div>
+  </div>
+
+  <!-- =================================== -->
+  <!-- Background Effects -->
+  <!-- =================================== -->
+  <canvas id="stars-canvas"></canvas>
+  <canvas id="confetti-canvas"></canvas>
+  <div class="bg-blobs">
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    <div class="blob blob-3"></div>
+  </div>
+
+  <!-- =================================== -->
+  <!-- Day Progress Bar -->
+  <!-- =================================== -->
+  <div class="day-progress">
+    <div class="day-progress-bar" id="day-progress-bar"></div>
+    <span class="day-progress-text" id="day-progress-text">0%</span>
+  </div>
+
+  <!-- =================================== -->
+  <!-- Top Controls -->
+  <!-- =================================== -->
+  <div class="top-controls">
+    <button class="icon-btn" id="notifications-btn" data-tooltip="اعلان‌ها">
+      🔔
+      <span class="badge hidden" id="notification-badge">0</span>
+    </button>
+    <button class="icon-btn" id="settings-btn" data-tooltip="تنظیمات">⚙️</button>
+    <button class="icon-btn" id="focus-btn" data-tooltip="حالت تمرکز">🎯</button>
+    <button class="icon-btn" id="theme-btn" data-tooltip="تغییر تم">🌓</button>
+    <button class="icon-btn" id="command-btn" data-tooltip="Command Palette">⌨️</button>
+    <button class="icon-btn" id="language-quick-switch" data-tooltip="تغییر زبان">🌐</button>
+    <button class="icon-btn" id="voice-btn" data-tooltip="دستور صوتی">🎤</button>
+    <button class="icon-btn" id="breathing-btn" data-tooltip="تمرین تنفس">🫁</button>
+    <button class="icon-btn" id="ambient-btn" data-tooltip="صداهای محیط">🎵</button>
+    <button class="icon-btn hidden" id="install-pwa" data-tooltip="نصب اپلیکیشن">📲</button>
+  </div>
+
+  <!-- =================================== -->
+  <!-- Main Container -->
+  <!-- =================================== -->
+  <div class="container">
+
+    <!-- ===== هدر اصلی (عرض کامل) ===== -->
+    <div class="glass-card header-card">
+      <div class="logo">🪐 Orbit</div>
+      <div class="greeting" id="greeting">سلام!</div>
+      <div class="clock" id="clock">--:--:--</div>
+      <div class="date" id="date">در حال بارگذاری...</div>
+    </div>
+
+    <!-- ===== جستجو (عرض کامل) ===== -->
+    <div class="glass-card search-card">
+      <form id="search-form" action="https://www.google.com/search" method="GET" target="_blank">
+        <input type="text" id="search-input" name="q" placeholder="🔍 جستجو در گوگل..." autocomplete="off">
+        <button type="submit" class="search-btn">جستجو</button>
+      </form>
+    </div>
+
+    <!-- ===== ردیف ۱: آب‌وهوا | پومودورو | نقل‌قول ===== -->
+    <div class="row row-3">
+
+      <!-- آب و هوا -->
+      <div class="glass-card weather-card">
+        <h2>🌤️ آب و هوا</h2>
+        <div id="weather-info">
+          <p class="loading">در حال دریافت...</p>
+        </div>
+        <div class="weather-forecast" id="weather-forecast"></div>
+      </div>
+
+      <!-- پومودورو -->
+      <div class="glass-card pomodoro-card">
+        <h2>⏱️ پومودورو</h2>
+        <div class="pomodoro-display">
+          <span id="pomodoro-time">25:00</span>
+          <span id="pomodoro-status">آماده برای تمرکز</span>
+        </div>
+        <div class="pomodoro-controls">
+          <button class="btn-primary" id="pomodoro-start">شروع</button>
+          <button class="btn-secondary" id="pomodoro-reset">ریست</button>
+        </div>
+        <div class="pomodoro-stats">
+          امروز: <span id="today-sessions">0</span> جلسه
+        </div>
+      </div>
+
+      <!-- نقل‌قول -->
+      <div class="glass-card quote-card">
+        <h2>💡 نقل‌قول روز</h2>
+        <p id="quote-text" class="loading">در حال بارگذاری...</p>
+        <p id="quote-author"></p>
+        <div class="quote-categories">
+          <button class="category-btn active" data-category="all">همه</button>
+          <button class="category-btn" data-category="motivation">انگیزشی</button>
+          <button class="category-btn" data-category="success">موفقیت</button>
+          <button class="category-btn" data-category="life">زندگی</button>
+        </div>
+        <button class="btn-secondary" id="new-quote">نقل قول جدید ✨</button>
+      </div>
+
+    </div>
+
+    <!-- ===== ردیف ۲: تقویم | عادت‌ها | یادداشت ===== -->
+    <div class="row row-3">
+
+      <!-- تقویم -->
+      <div class="glass-card calendar-card">
+        <h2>📅 تقویم</h2>
+        <div id="mini-calendar"></div>
+      </div>
+
+      <!-- عادت‌ها -->
+      <div class="glass-card habits-card">
+        <h2>🎯 عادت‌های روزانه</h2>
+        <div id="habits-list"></div>
+        <button class="btn-add" id="add-habit-btn">+ افزودن عادت</button>
+      </div>
+
+      <!-- یادداشت -->
+      <div class="glass-card notes-card">
+        <h2>📝 یادداشت سریع</h2>
+        <textarea id="quick-note" placeholder="یادداشت خود را بنویسید..."></textarea>
+        <p class="note-hint">💾 خودکار ذخیره می‌شود</p>
+      </div>
+
+    </div>
+
+    <!-- ===== ردیف ۳: لینک‌ها | آمار ===== -->
+    <div class="row row-2">
+
+      <!-- لینک‌های سریع -->
+      <div class="glass-card links-card">
+        <h2>🔗 لینک‌های سریع</h2>
+        <div class="links-grid" id="quick-links"></div>
+        <button class="btn-add" id="add-link-btn">+ افزودن لینک</button>
+      </div>
+
+      <!-- آمار -->
+      <div class="glass-card stats-card">
+        <h2>📊 آمار امروز</h2>
+        <div class="stats-grid">
+          <div class="stat-item">
+            <span class="stat-number" id="tasks-completed">0</span>
+            <span class="stat-label">وظیفه انجام شده</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-number" id="pomodoro-sessions">0</span>
+            <span class="stat-label">جلسه پومودورو</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-number" id="habits-completed">0</span>
+            <span class="stat-label">عادت انجام شده</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-number" id="focus-time">0</span>
+            <span class="stat-label">دقیقه تمرکز</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ===== وظایف (عرض کامل) ===== -->
+    <div class="glass-card tasks-card">
+      <div class="tasks-header">
+        <h2>📋 وظایف امروز</h2>
+        <input type="text" id="task-search" placeholder="🔍 جستجوی وظایف...">
+      </div>
+
+      <div class="add-task">
+        <input type="text" id="task-input" placeholder="وظیفه جدید...">
+        <select id="task-priority">
+          <option value="low">🟢 پایین</option>
+          <option value="medium" selected>🟡 متوسط</option>
+          <option value="high">🔴 بالا</option>
+        </select>
+        <select id="task-category">
+          <option value="work">💼 کار</option>
+          <option value="personal">👤 شخصی</option>
+          <option value="study">📚 مطالعه</option>
+          <option value="health">💪 سلامت</option>
+          <option value="other">📌 سایر</option>
+        </select>
+        <input type="date" id="task-due">
+        <button class="btn-primary" id="add-btn">+ افزودن</button>
+      </div>
+
+      <div class="task-filters">
+        <button class="filter-btn active" data-filter="all">همه</button>
+        <button class="filter-btn" data-filter="active">فعال</button>
+        <button class="filter-btn" data-filter="completed">انجام شده</button>
+        <button class="filter-btn" data-filter="high">🔴 اولویت بالا</button>
+        <button class="filter-btn" data-filter="today">📅 امروز</button>
+      </div>
+
+      <ul id="task-list"></ul>
+
+      <div class="tasks-footer">
+        <span id="tasks-count">0 وظیفه</span>
+        <button class="btn-secondary" id="print-tasks">🖨️ چاپ</button>
+      </div>
+    </div>
+
+    <!-- ===== ساعت جهانی (عرض کامل) ===== -->
+    <div class="glass-card world-clock-card">
+      <h2>🕐 ساعت جهانی</h2>
+      <div class="world-clock-display" id="world-clock-display">
+        <p style="color: var(--text-secondary);">ساعت جهانی را از تنظیمات اضافه کنید</p>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- =================================== -->
+  <!-- Footer -->
+  <!-- =================================== -->
+  <footer class="footer">
+    <div class="footer-content">
+      <p><span id="footer-name">MAEDEH_KHABIRI</span></p>
+      <div class="footer-links">
+        <a href="https://github.com" target="_blank">🐙 گیت‌هاب</a>
+        <a href="https://linkedin.com" target="_blank">💼 لینکدین</a>
+      </div>
+      <p class="footer-hint">
+        💡 میانبرهای کیبورد: <kbd>Ctrl+K</kbd> Command | <kbd>/</kbd> جستجو | <kbd>S</kbd> تنظیمات | <kbd>F</kbd> تمرکز | <kbd>L</kbd> زبان
+      </p>
+    </div>
+  </footer>
+
+  <!-- =================================== -->
+  <!-- Modals -->
+  <!-- =================================== -->
+
+  <!-- Welcome Modal -->
+  <div class="modal hidden" id="welcome-modal">
+    <div class="modal-content glass-card welcome-modal">
+      <h2>👋 به Orbit خوش آمدید!</h2>
+      <p>داشبورد شخصی شما آماده است. بیایید چند تنظیم اولیه انجام دهیم:</p>
+      <div class="welcome-form">
+        <label>نام شما:</label>
+        <input type="text" id="user-name" placeholder="نام خود را وارد کنید...">
+        <label>کشور شما:</label>
+        <select id="user-country">
+          <option value="">انتخاب کشور...</option>
+        </select>
+        <label>زبان:</label>
+        <select id="user-language">
+          <option value="fa">🇮🇷 فارسی</option>
+          <option value="en">🇬🇧 English</option>
+          <option value="ar">🇸🇦 العربية</option>
+          <option value="fr">🇫🇷 Français</option>
+          <option value="es">🇪🇸 Español</option>
+          <option value="de">🇩🇪 Deutsch</option>
+          <option value="tr">🇹🇷 Türkçe</option>
+          <option value="zh">🇨🇳 中文</option>
+          <option value="ja">🇯🇵 日本語</option>
+          <option value="ko">🇰🇷 한국어</option>
+          <option value="ru">🇷🇺 Русский</option>
+          <option value="it">🇮🇹 Italiano</option>
+        </select>
+      </div>
+      <button class="btn-primary btn-lg" id="welcome-save">شروع کنیم! 🚀</button>
+    </div>
+  </div>
+
+  <!-- Link Modal -->
+  <div class="modal hidden" id="link-modal">
+    <div class="modal-content glass-card">
+      <h3>🔗 لینک جدید</h3>
+      <input type="text" id="link-name" placeholder="نام لینک...">
+      <input type="url" id="link-url" placeholder="https://...">
+      <div class="modal-actions">
+        <button class="btn-primary" id="save-link">ذخیره</button>
+        <button class="btn-secondary" id="cancel-link">انصراف</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Habit Modal -->
+  <div class="modal hidden" id="habit-modal">
+    <div class="modal-content glass-card">
+      <h3>🎯 عادت جدید</h3>
+      <input type="text" id="habit-name" placeholder="نام عادت...">
+      <input type="text" id="habit-icon" placeholder="آیکون (مثلاً ⭐)" maxlength="2">
+      <div class="modal-actions">
+        <button class="btn-primary" id="save-habit">ذخیره</button>
+        <button class="btn-secondary" id="cancel-habit">انصراف</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- World Clock Modal -->
+  <div class="modal hidden" id="world-clock-modal">
+    <div class="modal-content glass-card">
+      <h3>🕐 افزودن منطقه زمانی</h3>
+      <input type="text" id="world-clock-name" placeholder="نام (مثلاً تهران)">
+      <select id="world-clock-timezone">
+        <option value="">انتخاب منطقه زمانی...</option>
+      </select>
+      <div class="modal-actions">
+        <button class="btn-primary" id="save-world-clock">ذخیره</button>
+        <button class="btn-secondary" id="cancel-world-clock">انصراف</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Breathing Modal -->
+  <div class="modal hidden" id="breathing-modal">
+    <div class="modal-content glass-card breathing-content">
+      <h3>🫁 تمرین تنفس</h3>
+      <p class="breathing-instruction">با دایره نفس بکشید</p>
+      <div class="breathing-circle">
+        <span class="breathing-text" id="breathing-text">شروع</span>
+      </div>
+      <div class="breathing-controls">
+        <button class="btn-primary" id="start-breathing">شروع</button>
+        <button class="btn-secondary" id="close-breathing">بستن</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Shortcuts Modal -->
+  <div class="modal hidden" id="shortcuts-modal">
+    <div class="modal-content glass-card shortcuts-content">
+      <h3>⌨️ میانبرهای کیبورد</h3>
+      <div class="shortcuts-grid">
+        <div class="shortcut-item"><kbd>Ctrl+K</kbd><span>Command Palette</span></div>
+        <div class="shortcut-item"><kbd>/</kbd><span>جستجو</span></div>
+        <div class="shortcut-item"><kbd>S</kbd><span>تنظیمات</span></div>
+        <div class="shortcut-item"><kbd>F</kbd><span>حالت تمرکز</span></div>
+        <div class="shortcut-item"><kbd>T</kbd><span>تغییر تم</span></div>
+        <div class="shortcut-item"><kbd>L</kbd><span>تغییر زبان</span></div>
+        <div class="shortcut-item"><kbd>N</kbd><span>اعلان‌ها</span></div>
+        <div class="shortcut-item"><kbd>?</kbd><span>راهنما</span></div>
+        <div class="shortcut-item"><kbd>Esc</kbd><span>بستن همه</span></div>
+        <div class="shortcut-item"><kbd>Ctrl+/</kbd><span>میانبرها</span></div>
+      </div>
+      <button class="btn-secondary" id="close-shortcuts" style="width:100%;">بستن</button>
+    </div>
+  </div>
+
+  <!-- Focus Mode -->
+  <div class="focus-mode hidden" id="focus-mode">
+    <div class="focus-content">
+      <div class="focus-timer" id="focus-timer">25:00</div>
+      <div class="focus-status" id="focus-status">در حال تمرکز...</div>
+      <button class="btn-danger" id="exit-focus">خروج از حالت تمرکز (Esc)</button>
+    </div>
+  </div>
+
+  <!-- Command Palette -->
+  <div class="command-palette hidden" id="command-palette">
+    <div class="command-content glass-card">
+      <input type="text" id="command-input" placeholder="🔍 دستور مورد نظر را تایپ کنید...">
+      <ul id="command-list"></ul>
+      <p class="command-hint">⬆️⬇️ برای حرکت | Enter برای اجرا | Esc برای بستن</p>
+    </div>
+  </div>
+
+  <!-- Notification Center -->
+  <div class="notification-center hidden" id="notification-center">
+    <div class="notification-content glass-card">
+      <div class="notification-header">
+        <h3>🔔 اعلان‌ها</h3>
+        <button class="btn-ghost" id="clear-notifications">پاک کردن همه</button>
+      </div>
+      <ul id="notification-list"></ul>
+    </div>
+  </div>
+
+  <!-- Ambient Sounds Panel -->
+  <div class="ambient-panel hidden" id="ambient-panel">
+    <div class="ambient-content glass-card">
+      <h3>🎵 صداهای محیط</h3>
+      <div class="ambient-grid">
+        <button class="ambient-btn" data-sound="rain">🌧️<br>باران</button>
+        <button class="ambient-btn" data-sound="forest">🌲<br>جنگل</button>
+        <button class="ambient-btn" data-sound="cafe">☕<br>کافه</button>
+        <button class="ambient-btn" data-sound="fire">🔥<br>آتش</button>
+        <button class="ambient-btn" data-sound="ocean">🌊<br>اقیانوس</button>
+        <button class="ambient-btn" data-sound="wind">💨<br>باد</button>
+      </div>
+      <div class="volume-control">
+        <label>🔊 صدا: <span id="ambient-volume-value">50</span>%</label>
+        <input type="range" id="ambient-volume" min="0" max="100" value="50">
+      </div>
+      <button class="btn-secondary" id="stop-ambient" style="width:100%;">⏹️ توقف</button>
+    </div>
+  </div>
+
+  <!-- =================================== -->
+  <!-- Settings Panel -->
+  <!-- =================================== -->
+  <div class="settings-panel hidden" id="settings-panel">
+    <div class="settings-content">
+
+      <div class="settings-header">
+        <h3>⚙️ تنظیمات</h3>
+        <button class="close-btn" id="close-settings">×</button>
+      </div>
+
+      <div class="settings-tabs">
+        <button class="tab-btn active" data-tab="location">📍 مکان</button>
+        <button class="tab-btn" data-tab="weather">🌡️ آب‌وهوا</button>
+        <button class="tab-btn" data-tab="appearance">🎨 ظاهر</button>
+        <button class="tab-btn" data-tab="language">🌐 زبان</button>
+        <button class="tab-btn" data-tab="general">⚙️ عمومی</button>
+        <button class="tab-btn" data-tab="accessibility">♿ دسترسی</button>
+        <button class="tab-btn" data-tab="privacy">🔒 حریم</button>
+      </div>
+
+      <!-- Tab: Location -->
+      <div class="tab-content active" id="tab-location">
+        <div class="settings-group">
+          <label>🌍 کشور:</label>
+          <select id="settings-country">
+            <option value="">در حال بارگذاری...</option>
+          </select>
+        </div>
+        <div class="settings-group">
+          <label>🏙️ استان/ایالت:</label>
+          <select id="settings-state" disabled>
+            <option value="">ابتدا کشور را انتخاب کنید</option>
+          </select>
+        </div>
+        <div class="settings-group">
+          <label>🏘️ شهر (اختیاری):</label>
+          <input type="text" id="settings-city" placeholder="نام شهر...">
+        </div>
+        <div class="settings-group">
+          <label>
+            <input type="checkbox" id="settings-gps">
+            📡 تشخیص خودکار موقعیت با GPS
+          </label>
+        </div>
+        <div class="settings-group">
+          <label>🕐 ساعت جهانی (حداکثر ۵ منطقه):</label>
+          <div class="world-clock-list" id="world-clock-list"></div>
+          <button class="btn-add mt-md" id="add-world-clock">+ افزودن منطقه زمانی</button>
+        </div>
+        <button class="btn-primary" id="save-location" style="width:100%;">ذخیره 📍</button>
+      </div>
+
+      <!-- Tab: Weather -->
+      <div class="tab-content" id="tab-weather">
+        <div class="settings-group">
+          <label>🌡️ واحد دما:</label>
+          <div class="radio-group">
+            <label><input type="radio" name="temp-unit" value="celsius" checked> سلسیوس (°C)</label>
+            <label><input type="radio" name="temp-unit" value="fahrenheit"> فارنهایت (°F)</label>
+          </div>
+        </div>
+        <div class="settings-group">
+          <label>📊 جزئیات آب‌وهوا:</label>
+          <label><input type="checkbox" id="show-humidity" checked> 💧 رطوبت</label>
+          <label><input type="checkbox" id="show-wind" checked> 💨 سرعت باد</label>
+          <label><input type="checkbox" id="show-pressure" checked> 🌬️ فشار هوا</label>
+          <label><input type="checkbox" id="show-visibility"> 👁️ دید افقی</label>
+          <label><input type="checkbox" id="show-sunrise" checked> 🌅 طلوع و غروب</label>
+        </div>
+        <div class="settings-group">
+          <label>📅 پیش‌بینی:</label>
+          <div class="radio-group">
+            <label><input type="radio" name="forecast-days" value="5" checked> ۵ روز</label>
+            <label><input type="radio" name="forecast-days" value="7"> ۷ روز</label>
+          </div>
+        </div>
+        <button class="btn-primary" id="save-weather" style="width:100%;">ذخیره 🌡️</button>
+      </div>
+
+      <!-- Tab: Appearance -->
+      <div class="tab-content" id="tab-appearance">
+        <div class="settings-group">
+          <label>🎨 تم‌های از پیش تعریف شده:</label>
+          <div class="theme-grid">
+            <div class="theme-card active" data-theme="cosmic">
+              <div class="theme-preview" style="background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);"></div>
+              <span class="theme-name">🌌 Cosmic</span>
+            </div>
+            <div class="theme-card" data-theme="ocean">
+              <div class="theme-preview" style="background: linear-gradient(135deg, #0c4a6e, #155e75, #164e63);"></div>
+              <span class="theme-name">🌊 Ocean</span>
+            </div>
+            <div class="theme-card" data-theme="sunset">
+              <div class="theme-preview" style="background: linear-gradient(135deg, #7c2d12, #9a3412, #c2410c);"></div>
+              <span class="theme-name">🌅 Sunset</span>
+            </div>
+            <div class="theme-card" data-theme="forest">
+              <div class="theme-preview" style="background: linear-gradient(135deg, #14532d, #166534, #15803d);"></div>
+              <span class="theme-name">🌲 Forest</span>
+            </div>
+            <div class="theme-card" data-theme="rose">
+              <div class="theme-preview" style="background: linear-gradient(135deg, #881337, #9f1239, #be185d);"></div>
+              <span class="theme-name">🌹 Rose</span>
+            </div>
+            <div class="theme-card" data-theme="midnight">
+              <div class="theme-preview" style="background: linear-gradient(135deg, #0f172a, #1e293b, #334155);"></div>
+              <span class="theme-name">🌙 Midnight</span>
+            </div>
+            <div class="theme-card" data-theme="golden">
+              <div class="theme-preview" style="background: linear-gradient(135deg, #78350f, #92400e, #a16207);"></div>
+              <span class="theme-name">☀️ Golden</span>
+            </div>
+            <div class="theme-card" data-theme="lava">
+              <div class="theme-preview" style="background: linear-gradient(135deg, #7f1d1d, #991b1b, #b91c1c);"></div>
+              <span class="theme-name">🔥 Lava</span>
+            </div>
+            <div class="theme-card" data-theme="sakura">
+              <div class="theme-preview" style="background: linear-gradient(135deg, #831843, #9d174d, #be185d);"></div>
+              <span class="theme-name">🌸 Sakura</span>
+            </div>
+            <div class="theme-card" data-theme="mint">
+              <div class="theme-preview" style="background: linear-gradient(135deg, #064e3b, #065f46, #047857);"></div>
+              <span class="theme-name">🍀 Mint</span>
+            </div>
+          </div>
+        </div>
+        <div class="settings-group">
+          <label>⚫ تم سفارشی:</label>
+          <div class="color-picker-grid">
+            <div class="color-picker-item">
+              <label>رنگ اصلی:</label>
+              <input type="color" id="custom-accent" value="#7c3aed">
+            </div>
+            <div class="color-picker-item">
+              <label>رنگ پس‌زمینه:</label>
+              <input type="color" id="custom-background" value="#0f0c29">
+            </div>
+            <div class="color-picker-item">
+              <label>رنگ ثانویه:</label>
+              <input type="color" id="custom-secondary" value="#302b63">
+            </div>
+            <div class="color-picker-item">
+              <label>رنگ متن:</label>
+              <input type="color" id="custom-text" value="#ffffff">
+            </div>
+          </div>
+          <button class="btn-secondary mt-md" id="apply-custom-theme" style="width:100%;">اعمال تم سفارشی</button>
+        </div>
+        <div class="settings-group">
+          <label>🌓 حالت:</label>
+          <div class="theme-selector">
+            <button class="theme-btn active" data-theme-mode="dark">🌙 تاریک</button>
+            <button class="theme-btn" data-theme-mode="light">☀️ روشن</button>
+            <button class="theme-btn" data-theme-mode="auto">🔄 خودکار</button>
+          </div>
+        </div>
+        <div class="settings-group">
+          <label>💎 شفافیت کارت‌ها: <span id="glass-opacity-value">8%</span></label>
+          <input type="range" id="glass-opacity" min="0" max="30" value="8" style="width:100%;">
+        </div>
+        <div class="settings-group">
+          <label><input type="checkbox" id="settings-animations" checked> ✨ انیمیشن‌ها</label>
+          <label><input type="checkbox" id="settings-sounds"> 🔊 صداهای رابط کاربری</label>
+        </div>
+        <button class="btn-primary" id="save-appearance" style="width:100%;">ذخیره 🎨</button>
+      </div>
+
+      <!-- Tab: Language -->
+      <div class="tab-content" id="tab-language">
+        <div class="settings-group">
+          <label>🌐 زبان برنامه:</label>
+          <div class="language-grid">
+            <button class="lang-btn active" data-lang="fa">🇮🇷 فارسی</button>
+            <button class="lang-btn" data-lang="en">🇬🇧 English</button>
+            <button class="lang-btn" data-lang="ar">🇸🇦 العربية</button>
+            <button class="lang-btn" data-lang="fr">🇫🇷 Français</button>
+            <button class="lang-btn" data-lang="es">🇪🇸 Español</button>
+            <button class="lang-btn" data-lang="de">🇩🇪 Deutsch</button>
+            <button class="lang-btn" data-lang="tr">🇹🇷 Türkçe</button>
+            <button class="lang-btn" data-lang="zh">🇨🇳 中文</button>
+            <button class="lang-btn" data-lang="ja">🇯🇵 日本語</button>
+            <button class="lang-btn" data-lang="ko">🇰🇷 한국어</button>
+            <button class="lang-btn" data-lang="ru">🇷🇺 Русский</button>
+            <button class="lang-btn" data-lang="it">🇮🇹 Italiano</button>
+          </div>
+        </div>
+        <div class="settings-group">
+          <label>📅 تقویم:</label>
+          <div class="calendar-selector">
+            <button class="calendar-btn active" data-calendar="persian">📅 شمسی</button>
+            <button class="calendar-btn" data-calendar="gregorian">📆 میلادی</button>
+            <button class="calendar-btn" data-calendar="islamic">🕌 قمری</button>
+          </div>
+        </div>
+        <div class="settings-group">
+          <label>🔢 فرمت اعداد:</label>
+          <select id="number-format">
+            <option value="persian">۱۲۳ (فارسی)</option>
+            <option value="english">123 (English)</option>
+            <option value="arabic">١٢٣ (عربی)</option>
+          </select>
+        </div>
+        <div class="settings-group">
+          <label>🕐 فرمت ساعت:</label>
+          <div class="radio-group">
+            <label><input type="radio" name="time-format" value="24" checked> ۲۴ ساعته (14:30)</label>
+            <label><input type="radio" name="time-format" value="12"> ۱۲ ساعته (2:30 PM)</label>
+          </div>
+        </div>
+        <button class="btn-primary" id="save-language" style="width:100%;">اعمال تغییرات 🌐</button>
+      </div>
+
+      <!-- Tab: General -->
+      <div class="tab-content" id="tab-general">
+        <div class="settings-group">
+          <label>👤 نام شما:</label>
+          <input type="text" id="settings-name" placeholder="نام خود را وارد کنید...">
+        </div>
+        <div class="settings-group">
+          <label>⏱️ مدت پومودورو (دقیقه):</label>
+          <input type="number" id="settings-pomodoro" value="25" min="1" max="120">
+        </div>
+        <div class="settings-group">
+          <label>☕ مدت استراحت (دقیقه):</label>
+          <input type="number" id="settings-break" value="5" min="1" max="30">
+        </div>
+        <div class="settings-group">
+          <label>🔔 اعلان‌ها:</label>
+          <label><input type="checkbox" id="settings-notif-pomodoro" checked> اعلان پایان پومودورو</label>
+          <label><input type="checkbox" id="settings-notif-sound" checked> صدای اعلان</label>
+          <label><input type="checkbox" id="settings-notif-browser"> اعلان مرورگر</label>
+        </div>
+        <button class="btn-primary" id="save-general" style="width:100%;">ذخیره ⚙️</button>
+      </div>
+
+      <!-- Tab: Accessibility -->
+      <div class="tab-content" id="tab-accessibility">
+        <div class="settings-group">
+          <label>🔤 اندازه فونت:</label>
+          <div class="font-size-selector">
+            <button class="font-size-btn" data-size="small">کوچک</button>
+            <button class="font-size-btn active" data-size="medium">متوسط</button>
+            <button class="font-size-btn" data-size="large">بزرگ</button>
+            <button class="font-size-btn" data-size="xlarge">خیلی بزرگ</button>
+          </div>
+        </div>
+        <div class="settings-group">
+          <label><input type="checkbox" id="settings-high-contrast"> 🎭 کنتراست بالا</label>
+          <label><input type="checkbox" id="settings-reduce-motion"> 🚫 کاهش حرکت (غیرفعال کردن انیمیشن‌ها)</label>
+        </div>
+        <div class="settings-group">
+          <label>🎨 حالت کوررنگی:</label>
+          <select id="color-blind-mode">
+            <option value="none">بدون</option>
+            <option value="deuteranopia">دوترانوپی (سبز-قرمز)</option>
+            <option value="protanopia">پروتانوپی (قرمز-سبز)</option>
+            <option value="tritanopia">تریتانوپی (آبی-زرد)</option>
+          </select>
+        </div>
+        <button class="btn-primary" id="save-accessibility" style="width:100%;">ذخیره ♿</button>
+      </div>
+
+      <!-- Tab: Privacy -->
+      <div class="tab-content" id="tab-privacy">
+        <div class="settings-group">
+          <label>💾 مدیریت داده‌ها</label>
+          <button class="btn-secondary" id="export-data" style="width:100%; margin-bottom:10px;">📥 خروجی داده‌ها (JSON)</button>
+          <label class="btn-secondary" style="width:100%; text-align:center; display:block; cursor:pointer;">
+            📤 وارد کردن داده‌ها:
+            <input type="file" id="import-data" accept=".json" style="display:none;">
+          </label>
+        </div>
+        <div class="settings-group">
+          <label>📊 فضای ذخیره‌سازی</label>
+          <div class="storage-info" id="storage-info"></div>
+        </div>
+        <div class="settings-group">
+          <label>⚠️ منطقه خطر</label>
+          <button class="btn-danger" id="clear-all-data" style="width:100%;">🗑️ پاک کردن همه داده‌ها</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- =================================== -->
+  <!-- Scripts -->
+  <!-- =================================== -->
+  <script src="data\themes.js"></script>
+  <script src="data\i18n.js"></script>
+  <script src="data\countries.js"></script>
+  <script src="script.js"></script>
+
+</body>
+</html>
